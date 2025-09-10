@@ -49,7 +49,7 @@ public_users.get('/isbn/:isbn', async function (req, res) {
 
 // Get book details based on author
 public_users.get('/author/:author', async function (req, res) {
-  const author = req.params.author.toLowerCase();
+  const author = req.params.author;
   if (!author) return res.status(400).json({ message: "Author is required" });
 
   try {
@@ -61,12 +61,16 @@ public_users.get('/author/:author', async function (req, res) {
 });
 
 // Get all books based on title
-public_users.get('/title/:title', function (req, res) {
-  const title = req.params.title.toLowerCase();
+public_users.get('/title/:title', async function (req, res) {
+  const title = req.params.title;
   if (!title) return res.status(400).json({ message: "Title is required" });
 
-  const books = booksDB.getBooksByTitle(title);
-  return res.send(JSON.stringify(books, null, 4));
+  try {
+    const books = await axios.get(`${BOOKS_HOST}/books/title/${title}`, { headers: { "x-is-localonly": "true" } })
+    return res.send(books.data);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching books" });
+  }
 });
 
 //  Get book review

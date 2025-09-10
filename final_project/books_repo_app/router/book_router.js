@@ -26,11 +26,11 @@ bookRouter.get('/author/:author', async function (req, res) {
   return res.send(books);
 });
 
-bookRouter.get('/title/:title', function (req, res) {
+bookRouter.get('/title/:title', async function (req, res) {
   const title = req.params.title.toLowerCase();
   if (!title) return res.status(400).json({ message: "Title is required" });
 
-  const books = booksDB.getBooksByTitle(title);
+  const books = await booksDB.getBooksByTitle(title);
   return res.send(books);
 });
 
